@@ -3,7 +3,7 @@ cache_loading: TRUE
 munging: TRUE
 logging: FALSE
 load_libraries: TRUE
-libraries: dplyr, ggplot2, stringr, lubridate, RCurl
+libraries: dplyr, ggplot2, stringr, lubridate, RCurl, caret
 as_factors: TRUE
 data_tables: FALSE
 recursive_loading: TRUE

@@ -139,6 +139,13 @@ Version: 1.3-11
 Hash: 13d55a922c33d6b4661bd095a306a450
 Requires: sp
 
+Package: ggmap
+Source: CRAN
+Version: 2.4
+Hash: 6e6d3591c5436f7eb68da14a1b6b868e
+Requires: RgoogleMaps, digest, geosphere, ggplot2, jpeg, mapproj, plyr,
+    png, proto, reshape2, rjson, scales
+
 Package: ggplot2
 Source: CRAN
 Version: 1.0.0
@@ -164,6 +171,11 @@ Package: iterators
 Source: CRAN
 Version: 1.0.7
 Hash: b5320a58712688d5b18c207cf256ef3f
+
+Package: jpeg
+Source: CRAN
+Version: 0.1-8
+Hash: 2a96df07e30724f8bb773e4f78c634c6
 
 Package: knitr
 Source: CRAN

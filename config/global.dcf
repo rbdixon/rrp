@@ -1,9 +1,9 @@
 data_loading: TRUE
 cache_loading: TRUE
 munging: TRUE
-logging: FALSE
+logging: TRUE
 load_libraries: TRUE
-libraries: dplyr, ggplot2, stringr, lubridate, RCurl, caret
+libraries: dplyr, ggplot2, stringr, lubridate, RCurl, caret, ggmap
 as_factors: TRUE
 data_tables: FALSE
 recursive_loading: TRUE

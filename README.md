@@ -1,6 +1,11 @@
 # Brad's Project Template
 
-Based on [ProjectTemplate](http://projecttemplate.net) and customized a bit with:
+## Installing ggmap on Homebrew Macs
 
-* A few functions in lib
-* An example.Rmd file to get started with
+This appears to be required:
+
+```
+$ cat ~/.R/Makevars 
+PKG_CFLAGS=-I/opt/boxen/homebrew/include
+PKG_LIBS=-L/opt/boxen/homebrew/lib -ljpeg
+```

@@ -83,6 +83,12 @@ Version: 0.5-9
 Hash: ab397c3e2a17f6fa4bb52992c8a0c871
 Requires: profileModel
 
+Package: caTools
+Source: CRAN
+Version: 1.17.1
+Hash: bb5fdc266f716b8a289a4f92007d53e3
+Requires: bitops
+
 Package: car
 Source: CRAN
 Version: 2.0-25
@@ -166,6 +172,12 @@ Package: highr
 Source: CRAN
 Version: 0.4.1
 Hash: 6845341309f2bcd75a7ba4c3237cbd0f
+
+Package: htmltools
+Source: CRAN
+Version: 0.2.6
+Hash: 2c87108d130de261ac3c468d3316ae42
+Requires: digest
 
 Package: iterators
 Source: CRAN
@@ -313,6 +325,12 @@ Source: CRAN
 Version: 0.2.15
 Hash: f78059fac4af154bfe46bf547ae12be9
 
+Package: rmarkdown
+Source: CRAN
+Version: 0.5.1
+Hash: 2d87f70c12c5558c50c4b3587fc6f499
+Requires: caTools, htmltools, knitr, yaml
+
 Package: scales
 Source: CRAN
 Version: 0.2.4
@@ -328,3 +346,8 @@ Package: stringr
 Source: CRAN
 Version: 0.6.2
 Hash: cdde0cfa0f52cffeaca23a11a3899779
+
+Package: yaml
+Source: CRAN
+Version: 2.1.13
+Hash: e5d041c001f6d641fd009c1f6ef7d831

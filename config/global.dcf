@@ -1,4 +1,4 @@
-data_loading: TRUE
+data_loading: FALSE
 cache_loading: TRUE
 munging: TRUE
 logging: TRUE

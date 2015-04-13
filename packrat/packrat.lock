@@ -199,6 +199,11 @@ Version: 1.1-7
 Hash: c180abce1c10306f0db266cf627af314
 Requires: Rcpp, RcppEigen, minqa, nloptr
 
+Package: log4r
+Source: CRAN
+Version: 0.2
+Hash: 79c939bf623e29346c7bf1d60b81a71e
+
 Package: lubridate
 Source: CRAN
 Version: 1.3.3

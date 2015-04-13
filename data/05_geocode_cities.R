@@ -13,5 +13,8 @@ geocode_cities = function(c) {
   return(CITIES)
 }
 
+# This may be disallowed: https://www.kaggle.com/c/restaurant-revenue-prediction/forums/t/13018/city-names/68645
+# Also: All the cities in train and test are in Turkey, except for "Tanımsız" which means undefined in Turkish.
+
 CITIES = geocode_cities(c(TEST$City, TRAIN$City))
 cache("CITIES")

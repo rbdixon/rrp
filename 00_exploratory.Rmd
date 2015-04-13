@@ -1,0 +1,142 @@
+---
+title: "Exploratory Analysis"
+author: "Brad Dixon <rd729c@att.com>"
+date: "April 13, 2015"
+output:
+  html_document:
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+library(ProjectTemplate)
+load.project()
+```
+
+# Variable Characterization
+
+## Open Date
+
+`date` is a parsed version of Open.Date.
+
+```{r hist_date}
+DATA %>%
+  ggplot(aes(x=date, y=..density..)) +
+    geom_histogram() +
+    facet_wrap(~dataset) +
+    xlab("Date of Store Opening") +
+    ylab("Stores Opened (Density)") +
+    theme_bw()
+```
+
+```{r revenue_date}
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(x=date, y=revenue)) +
+    geom_point() +
+    geom_smooth() +
+    xlab("Date of Store Opening") +
+    ylab("Revenue") +
+    theme_bw()
+```
+
+## City and City.Group
+
+```{r map}
+get_map(location="Turkey", zoom=5) %>%
+  ggmap +
+  geom_point(data = DATA, aes(lon, lat, color=City.Group, shape=dataset), position = "jitter", size=2) +
+  scale_shape_manual(values=c(0, 15))
+```
+
+Yep, its Turkey!
+
+```{r city}
+setdiff(TEST$City, TRAIN$City)
+```
+
+**Issue**: Some cities found in TEST are not present in TRAIN.
+
+```{r date_revenue_citygroup}
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(x=date, y=revenue, color=City.Group)) +
+    geom_point() +
+    geom_smooth() +
+    xlab("Date of Store Opening") +
+    ylab("Revenue") +
+    theme_bw()
+```
+
+## Type
+
+```{r Type}
+summary(factor(TRAIN$Type))
+summary(factor(TEST$Type))
+```
+
+```{r date_revenue_type}
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(x=date, y=revenue, color=Type)) +
+    geom_point() +
+    geom_smooth() +
+    xlab("Date of Store Opening") +
+    ylab("Revenue") +
+    theme_bw()
+```
+
+**Issue**: Missing an `MB` level in TRAIN.
+
+# Mystery Variable Characterization
+
+## Levels and Range Comparison
+
+```{r mystery_variable_ranges}
+DATA %>%
+  group_by(dataset) %>%
+  select(P1:P37) %>%
+  summarise_each(funs(
+    min = min(.),
+    max = max(.),
+    lev=length(unique(.))
+    ), P1:P37) %>%
+  gather(varname, value, P1_min:P37_lev) %>%
+  group_by(varname) %>%
+  summarize(
+    min=min(value),
+    max=max(value)
+  ) %>%
+  separate(varname, c("var", "metric")) %>%
+  arrange(var, metric) %>%
+  filter(min!=max) %>%
+  print.data.frame
+```
+
+**Issue**: Range discrepancies between TEST and TRAIN.
+
+**Issue**: Some of the mystery variables have differing numbers of distinct values.
+
+## Histograms
+
+```{r mystery_variable_histograms}
+P_mv_histogram = DATA %>%
+  select(dataset, P1:P37) %>%
+  gather(varname, value, P1:P37) %>%
+  select(varname, dataset, value) %>%
+  group_by(varname) %>%
+  do(
+    plot = ggplot(., aes(x=value, y=..density..)) +
+      geom_histogram(binwidth=1) +
+      ggtitle(.$varname) +
+      facet_wrap( ~ dataset) +
+      ylab("Density") +
+      theme_bw()
+  )
+
+P_mv_histogram %>%
+  rowwise %>%
+  do({
+    print(.$plot)
+    data.frame()
+  })
+```

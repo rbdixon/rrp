@@ -5,3 +5,4 @@ raw/test.csv
 raw/train.csv
 .Rhistory
 *.Rproj
+logs/*

@@ -11,6 +11,6 @@ plyr::llply( names(predictions), function(name) {
     Id = 0:(length(predictions[[name]])-1),
     Prediction = predictions[[name]]
   )
-  fn = paste("reports/submission_", as.YYMMDD(now()), "_", name, ".csv", sep="")
+  fn = paste("reports/submission_", as.YYYYMMDD(now()), "_", name, ".csv", sep="")
   write.table(D, fn, row.names=FALSE, quote=FALSE, sep=",")
 })

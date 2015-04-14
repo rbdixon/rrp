@@ -1,0 +1,25 @@
+clean_data = function(D) {
+  D %>%
+    # Not useful for modeling
+    select(-Id, -dataset) %>%
+    # Parse date
+    mutate(
+      Open.Date = mdy(Open.Date)
+    ) %>%
+    # Factorize
+    mutate_each(funs(factor), City.Group) %>%
+#     # Scale the integer columns with differing levels
+#     mutate_each(funs(scale), P1, P5, P7, P9, P15, P17, P18, P21, P25, P30, P33:P36) %>%
+#     # Scale the non-integer columns
+#     mutate_each(funs(scale), P2:P4, P13, P26:P29)
+    # For now drop all but the mystery vars
+    select(
+      -Open.Date,
+      -City,
+      -City.Group,
+      -Type
+    ) %>%
+    identity
+}
+
+TRAIN_CLEAN = clean_data(TRAIN)

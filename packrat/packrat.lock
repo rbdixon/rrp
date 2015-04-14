@@ -122,6 +122,12 @@ Version: 0.4.1
 Hash: 4ce03ad26fb9592dda1274f72c5d3257
 Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr
 
+Package: earth
+Source: CRAN
+Version: 4.2.0
+Hash: c0cd0d37d74d969a2048d6956202abb8
+Requires: plotmo, plotrix
+
 Package: evaluate
 Source: CRAN
 Version: 0.5.5
@@ -287,6 +293,16 @@ Version: 0.4-2
 Hash: d28676d1aaa5a988d968cdcb42661177
 Requires: lme4
 
+Package: plotmo
+Source: CRAN
+Version: 2.2.1
+Hash: ef9577434a974d492623a02cd0b91b9f
+
+Package: plotrix
+Source: CRAN
+Version: 3.5-11
+Hash: 615f871b3ee3798e318330a5c2323623
+
 Package: plyr
 Source: CRAN
 Version: 1.8.1
@@ -342,10 +358,21 @@ Source: CRAN
 Version: 1.0-17
 Hash: 29bd0f1fc6cba0edf00eafe2b5b8e9d0
 
+Package: stringi
+Source: CRAN
+Version: 0.4-1
+Hash: 955e96fc5961bf9f7b3ca916f9b1e606
+
 Package: stringr
 Source: CRAN
 Version: 0.6.2
 Hash: cdde0cfa0f52cffeaca23a11a3899779
+
+Package: tidyr
+Source: CRAN
+Version: 0.2.0
+Hash: 3b379415e9e88d4f559b380819893304
+Requires: dplyr, lazyeval, reshape2, stringi
 
 Package: yaml
 Source: CRAN

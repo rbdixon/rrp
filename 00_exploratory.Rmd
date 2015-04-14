@@ -52,6 +52,9 @@ Yep, its Turkey!
 
 ```{r city}
 setdiff(TEST$City, TRAIN$City)
+setdiff(TRAIN$City, TEST$City)
+table(DATA$dataset, DATA$City)
+table(DATA$dataset, DATA$City.Group)
 ```
 
 **Issue**: Some cities found in TEST are not present in TRAIN.
@@ -70,8 +73,7 @@ DATA %>%
 ## Type
 
 ```{r Type}
-summary(factor(TRAIN$Type))
-summary(factor(TEST$Type))
+table(DATA$dataset, DATA$Type)
 ```
 
 ```{r date_revenue_type}
@@ -83,6 +85,7 @@ DATA %>%
     xlab("Date of Store Opening") +
     ylab("Revenue") +
     theme_bw()
+
 ```
 
 **Issue**: Missing an `MB` level in TRAIN.
@@ -92,13 +95,13 @@ DATA %>%
 ## Levels and Range Comparison
 
 ```{r mystery_variable_ranges}
-DATA %>%
+MV_RANGES = DATA %>%
   group_by(dataset) %>%
   select(P1:P37) %>%
   summarise_each(funs(
     min = min(.),
     max = max(.),
-    lev=length(unique(.))
+    lev = length(unique(.))
     ), P1:P37) %>%
   gather(varname, value, P1_min:P37_lev) %>%
   group_by(varname) %>%
@@ -108,13 +111,43 @@ DATA %>%
   ) %>%
   separate(varname, c("var", "metric")) %>%
   arrange(var, metric) %>%
-  filter(min!=max) %>%
+  mutate(
+    odd = ifelse(
+      min != max,
+      TRUE, FALSE)
+  )
+
+# How many discrepancies of each type
+table(MV_RANGES$odd, MV_RANGES$metric)
+
+# Print discrepancies
+MV_RANGES %>%
+  filter(odd) %>%
   print.data.frame
 ```
 
 **Issue**: Range discrepancies between TEST and TRAIN.
 
 **Issue**: Some of the mystery variables have differing numbers of distinct values.
+
+Clint has a theory that the mystery vars with small numbers of levels
+are candidates for categorical treatment. Lets see.
+
+```{r test}
+MV_ODD = MV_RANGES %>%
+  group_by(var) %>%
+  mutate(
+    odd = any(odd)
+  ) %>%
+  filter(metric=="lev") %>%
+  select(
+    lev = min,
+    odd
+  )
+table(MV_ODD$odd, MV_ODD$lev)
+```
+
+Inconclusive.
 
 ## Histograms
 
@@ -139,4 +172,16 @@ P_mv_histogram %>%
     print(.$plot)
     data.frame()
   })
+```
+
+# Correlated Predictors
+
+```{r cor_pred}
+TRAIN.P.cor = cor(select(TRAIN, P1:P37))
+findCorrelation(TRAIN.P.cor, cutoff = .75)
+```
+
+# Linear Combinations
+```{r linear_combos}
+TRAIN.P.lc = findLinearCombos(select(TRAIN, P1:P37))
 ```

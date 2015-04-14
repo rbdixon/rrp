@@ -85,6 +85,64 @@ setdiff(TEST$City, TRAIN$City)
 ## [29] "Çankırı"
 ```
 
+```r
+setdiff(TRAIN$City, TEST$City)
+```
+
+```
+## [1] "Tokat"     "Elazığ"    "Kastamonu" "Karabük"   "Amasya"    "Osmaniye"
+```
+
+```r
+table(DATA$dataset, DATA$City)
+```
+
+```
+##        
+##         Adana Afyonkarahisar Aksaray Amasya Ankara Antalya Artvin Aydın
+##   TEST   2514            331     650      0   8720    5911    344  1617
+##   TRAIN     3              1       0      1     19       4      0     2
+##        
+##         Balıkesir Batman Bilecik  Bolu Bursa Çanakkale Çankırı Çorum
+##   TEST       2463    604     339   631  2441       965     309   304
+##   TRAIN         1      0       0     1     5         0       0     0
+##        
+##         Denizli Diyarbakır Düzce Edirne Elazığ Erzincan Erzurum Eskişehir
+##   TEST      964        954   303   1230      0      319     317       900
+##   TRAIN       1          3     0      1      1        0       0         3
+##        
+##         Gaziantep Giresun Hatay Isparta İstanbul İzmir Kahramanmaraş
+##   TEST       1487     310   951     304    34087  6465           315
+##   TRAIN         1       0     0       1       50     9             0
+##        
+##         Karabük  Kars Kastamonu Kayseri Kırıkkale Kırklareli Kırşehir
+##   TEST        0   289         0     323       622        281      319
+##   TRAIN       1     0         1       3         0          1        0
+##        
+##         Kocaeli Konya Kütahya Malatya Manisa Mardin Mersin Muğla Nevşehir
+##   TEST     4364  1576     304     616   1227    610   2735  1823      328
+##   TRAIN       1     2       1       0      0      0      0     2        0
+##        
+##         Niğde  Ordu Osmaniye  Rize Sakarya Samsun Şanlıurfa Siirt Sivas
+##   TEST    310   317        0   345     604    324       609   315   326
+##   TRAIN     0     0        1     0       4      5         1     0     0
+##        
+##         Tanımsız Tekirdağ Tokat Trabzon  Uşak Yalova Zonguldak
+##   TEST       298     1577     0     660   293    630       926
+##   TRAIN        0        3     1       2     1      0         0
+```
+
+```r
+table(DATA$dataset, DATA$City.Group)
+```
+
+```
+##        
+##         Big Cities Other
+##   TEST       49272 50728
+##   TRAIN         78    59
+```
+
 **Issue**: Some cities found in TEST are not present in TRAIN.
 
 
@@ -109,21 +167,14 @@ DATA %>%
 
 
 ```r
-summary(factor(TRAIN$Type))
+table(DATA$dataset, DATA$Type)
 ```
 
 ```
-## DT FC IL 
-##  1 76 60
-```
-
-```r
-summary(factor(TEST$Type))
-```
-
-```
-##    DT    FC    IL    MB 
-##  2244 57019 40447   290
+##        
+##            DT    FC    IL    MB
+##   TEST   2244 57019 40447   290
+##   TRAIN     1    76    60     0
 ```
 
 
@@ -152,13 +203,13 @@ DATA %>%
 
 
 ```r
-DATA %>%
+MV_RANGES = DATA %>%
   group_by(dataset) %>%
   select(P1:P37) %>%
   summarise_each(funs(
     min = min(.),
     max = max(.),
-    lev=length(unique(.))
+    lev = length(unique(.))
     ), P1:P37) %>%
   gather(varname, value, P1_min:P37_lev) %>%
   group_by(varname) %>%
@@ -168,43 +219,90 @@ DATA %>%
   ) %>%
   separate(varname, c("var", "metric")) %>%
   arrange(var, metric) %>%
-  filter(min!=max) %>%
+  mutate(
+    odd = ifelse(
+      min != max,
+      TRUE, FALSE)
+  )
+
+# How many discrepancies of each type
+table(MV_RANGES$odd, MV_RANGES$metric)
+```
+
+```
+##        
+##         lev max min
+##   FALSE  18  31  36
+##   TRUE   19   6   1
+```
+
+```r
+# Print discrepancies
+MV_RANGES %>%
+  filter(odd) %>%
   print.data.frame
 ```
 
 ```
-##    var metric  min  max
-## 1   P1    lev  8.0  9.0
-## 2   P1    max 12.0 15.0
-## 3  P15    lev  8.0  9.0
-## 4  P17    lev  9.0 10.0
-## 5  P18    lev  7.0  9.0
-## 6  P18    max 12.0 15.0
-## 7   P2    lev  8.0  9.0
-## 8  P21    lev  8.0  9.0
-## 9  P25    lev  8.0  9.0
-## 10 P27    lev  9.0 10.0
-## 11 P29    lev  7.0  8.0
-## 12 P29    max  7.5 10.0
-## 13  P3    lev  7.0  8.0
-## 14  P3    max  6.0  7.5
-## 15 P30    lev  9.0 10.0
-## 16 P33    lev  6.0  7.0
-## 17 P34    lev  8.0 11.0
-## 18 P34    max 24.0 30.0
-## 19 P35    lev  7.0  8.0
-## 20 P36    lev  8.0 10.0
-## 21  P4    lev  6.0  7.0
-## 22  P4    min  2.0  3.0
-## 23  P5    lev  6.0  7.0
-## 24  P5    max  6.0  8.0
-## 25  P7    lev  6.0  7.0
-## 26  P9    lev  4.0  5.0
+##    var metric  min  max  odd
+## 1   P1    lev  8.0  9.0 TRUE
+## 2   P1    max 12.0 15.0 TRUE
+## 3  P15    lev  8.0  9.0 TRUE
+## 4  P17    lev  9.0 10.0 TRUE
+## 5  P18    lev  7.0  9.0 TRUE
+## 6  P18    max 12.0 15.0 TRUE
+## 7   P2    lev  8.0  9.0 TRUE
+## 8  P21    lev  8.0  9.0 TRUE
+## 9  P25    lev  8.0  9.0 TRUE
+## 10 P27    lev  9.0 10.0 TRUE
+## 11 P29    lev  7.0  8.0 TRUE
+## 12 P29    max  7.5 10.0 TRUE
+## 13  P3    lev  7.0  8.0 TRUE
+## 14  P3    max  6.0  7.5 TRUE
+## 15 P30    lev  9.0 10.0 TRUE
+## 16 P33    lev  6.0  7.0 TRUE
+## 17 P34    lev  8.0 11.0 TRUE
+## 18 P34    max 24.0 30.0 TRUE
+## 19 P35    lev  7.0  8.0 TRUE
+## 20 P36    lev  8.0 10.0 TRUE
+## 21  P4    lev  6.0  7.0 TRUE
+## 22  P4    min  2.0  3.0 TRUE
+## 23  P5    lev  6.0  7.0 TRUE
+## 24  P5    max  6.0  8.0 TRUE
+## 25  P7    lev  6.0  7.0 TRUE
+## 26  P9    lev  4.0  5.0 TRUE
 ```
 
 **Issue**: Range discrepancies between TEST and TRAIN.
 
 **Issue**: Some of the mystery variables have differing numbers of distinct values.
+
+Clint has a theory that the mystery vars with small numbers of levels
+are candidates for categorical treatment. Lets see.
+
+
+```r
+MV_ODD = MV_RANGES %>%
+  group_by(var) %>%
+  mutate(
+    odd = any(odd)
+  ) %>%
+  filter(metric=="lev") %>%
+  select(
+    lev = min,
+    odd
+  )
+table(MV_ODD$odd, MV_ODD$lev)
+```
+
+```
+##        
+##         4 5 6 7 8 9 10
+##   FALSE 1 2 0 1 4 6  4
+##   TRUE  1 0 4 4 7 3  0
+```
+
+Inconclusive.
 
 ## Histograms
 
@@ -237,4 +335,23 @@ P_mv_histogram %>%
 ```
 ## Source: local data frame [0 x 0]
 ## Groups: <by row>
+```
+
+# Correlated Predictors
+
+
+```r
+TRAIN.P.cor = cor(select(TRAIN, P1:P37))
+findCorrelation(TRAIN.P.cor, cutoff = .75)
+```
+
+```
+##  [1] 36 34 16 32 18 30 14 35 26 31  1 20 10 15 25  7  9 24 13 28  8 12 33
+## [24] 19 21 37
+```
+
+# Linear Combinations
+
+```r
+TRAIN.P.lc = findLinearCombos(select(TRAIN, P1:P37))
 ```

@@ -2,6 +2,10 @@ clean_data = function(D) {
   D %>%
     # Not useful for modeling
     select(-Id, -dataset) %>%
+    # Holdout
+    mutate(
+      holdout = ifelse(sample(c(TRUE, FALSE), n(), replace=TRUE, prob=c(.2, .8)), TRUE, FALSE)
+    ) %>%
     # Parse date
     mutate(
       Open.Date = mdy(Open.Date)

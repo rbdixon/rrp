@@ -1,7 +1,5 @@
 ---
 title: "Exploratory Analysis"
-author: "Brad Dixon <rd729c@att.com>"
-date: "April 13, 2015"
 output:
   html_document:
     keep_md: yes
@@ -89,6 +87,31 @@ DATA %>%
 ```
 
 **Issue**: Missing an `MB` level in TRAIN.
+
+## Lat/Lon
+
+```{r latlon}
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(lat, revenue)) +
+  geom_line() +
+  geom_smooth()
+
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(lon, revenue)) +
+  geom_line() +
+  geom_smooth()
+
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot( ) +
+  geom_point( aes( cut(lon,4), cut(lat,4), size=cut(revenue,4)), position="jitter" ) +
+  theme_bw() +
+  xlab("Longitude Range") +
+  ylab("Latitude Range") +
+  ggtitle("Revenue vs. Lat/Lon")
+```
 
 # Mystery Variable Characterization
 

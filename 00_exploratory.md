@@ -1,6 +1,4 @@
 # Exploratory Analysis
-Brad Dixon <rd729c@att.com>  
-April 13, 2015  
 
 
 
@@ -196,6 +194,50 @@ DATA %>%
 ![](00_exploratory_files/figure-html/date_revenue_type-1.png) 
 
 **Issue**: Missing an `MB` level in TRAIN.
+
+## Lat/Lon
+
+
+```r
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(lat, revenue)) +
+  geom_line() +
+  geom_smooth()
+```
+
+```
+## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
+```
+
+![](00_exploratory_files/figure-html/latlon-1.png) 
+
+```r
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(lon, revenue)) +
+  geom_line() +
+  geom_smooth()
+```
+
+```
+## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
+```
+
+![](00_exploratory_files/figure-html/latlon-2.png) 
+
+```r
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot( ) +
+  geom_point( aes( cut(lon,4), cut(lat,4), size=cut(revenue,4)), position="jitter" ) +
+  theme_bw() +
+  xlab("Longitude Range") +
+  ylab("Latitude Range") +
+  ggtitle("Revenue vs. Lat/Lon")
+```
+
+![](00_exploratory_files/figure-html/latlon-3.png) 
 
 # Mystery Variable Characterization
 

@@ -1,4 +1,5 @@
-TEST_CLEAN = clean_data(TEST)
+TEST_CLEAN = clean_data(TEST) %>%
+  select(-holdout)
 
 # Create predictions
 predictions = plyr::llply(models, function(m) {

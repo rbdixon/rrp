@@ -1,6 +1,7 @@
 # Validate holdout
 VALIDATE_CLEAN = TRAIN_CLEAN %>% 
-  filter(holdout)
+  filter(holdout) %>%
+  select(-holdout)
 
 models.validate = plyr::llply(models, function(m) {
   obs  = VALIDATE_CLEAN$revenue

@@ -1,8 +1,8 @@
 # Crank up MC
 registerDoMC(cores = 4)
 
-# Remove models under dev
-if (exists("model.rf")) { rm( "model.rf" ) }
+# Nuke the models. Comment to load cached copies.
+rm(list=ls(pattern="model.*"))
 
 tc = trainControl(
   method = "repeatedcv",
@@ -13,10 +13,11 @@ if (!exists("model.mars")) {
   set.seed(1)
   model.mars = train( 
     form = revenue ~ .,
-    data = filter(TRAIN_CLEAN, !holdout) %>% select(-holdout), 
+    data = TRAIN_CLEAN,
     method = "earth",
     trControl = tc
   )
+  cache("model.mars")
 }
 
 if (!exists("model.rf")) {
@@ -24,23 +25,25 @@ if (!exists("model.rf")) {
   # Useful! http://www.bios.unc.edu/~dzeng/BIOS740/randomforest.pdf
   model.rf = train( 
     form = revenue ~ .,
-    data = filter(TRAIN_CLEAN, !holdout) %>% select(-holdout), 
+    data = TRAIN_CLEAN,
     method = "rf",
     importance = TRUE,
     trControl = tc,
     # See http://stackoverflow.com/questions/10498477/carettrain-specify-model-generation-parameters
     tuneGrid = data.frame(.mtry=c(2:8))
   )
+  cache("model.rf")
 }
 
 if (!exists("model.lm")) {
   set.seed(1)
   model.lm = train(
     form = revenue ~.,
-    data = filter(TRAIN_CLEAN, !holdout) %>% select(-holdout), 
+    data = TRAIN_CLEAN,
     method = "lm",
     trControl = tc
   )
+  cache("model.lm")
 }
 
 models = list(

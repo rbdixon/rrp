@@ -5,7 +5,7 @@ clean_data = function(D) {
     left_join(CITIES, by=c("City"="city")) %>%
     mutate(
       # Holdout
-      holdout = ifelse(sample(c(TRUE, FALSE), n(), replace=TRUE, prob=c(.2, .8)), TRUE, FALSE),
+      # holdout = ifelse(sample(c(TRUE, FALSE), n(), replace=TRUE, prob=c(.2, .8)), TRUE, FALSE),
 
       # Parse date
       Open.Date = mdy(Open.Date),
@@ -19,8 +19,10 @@ clean_data = function(D) {
     # Factorize
     mutate_each(funs(factor), City, City.Group) %>%
     
-    # Cut
-    mutate_each(funs( cut(., 4, labels=1:4) ), lat, lon) %>%
+    # Cut lat/lon
+    mutate_each( funs( replace(., is.na(.), median(., na.rm=TRUE)) ), lat, lon) %>%
+    mutate_each( funs( cut(., 4, labels=1:4) ), lat, lon) %>%
+
 #     # Scale the integer columns with differing levels
 #     mutate_each(funs(scale), P1, P5, P7, P9, P15, P17, P18, P21, P25, P30, P33:P36) %>%
 #     # Scale the non-integer columns
@@ -35,5 +37,5 @@ clean_data = function(D) {
     identity
 }
 
-set.seed(1)
 TRAIN_CLEAN = clean_data(TRAIN)
+if (any(is.na(TRAIN_CLEAN))) warning("NA's in TRAIN_CLEAN")

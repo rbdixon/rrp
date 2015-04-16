@@ -54,3 +54,14 @@ ggplot(SCOREBOARD_BEST, aes(ymd(date), minrmse)) +
   theme_bw() +
   ggtitle("Kaggle RRP: RMSE Scoreboard (scores less than median)")
 ```
+
+```{r scoreboard_cdf}
+SCOREBOARD %>%
+#   filter(log(Score)<15) %>%
+  ggplot(aes(log(Score))) +
+    geom_density() +
+    geom_vline(data = filter(SCOREBOARD, us), aes(xintercept=log(Score)), color="red") +
+    geom_vline(xintercept=log(2308563.60185), color="grey") +
+    scale_x_reverse(lim=c(15,min(log(SCOREBOARD$Score)))) +
+    xlab("log(Score): Smaller is better. Better scores go to the right (reversed axis)")
+```

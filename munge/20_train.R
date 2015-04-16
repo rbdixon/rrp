@@ -2,7 +2,8 @@
 registerDoMC(cores = 4)
 
 # Nuke the models. Comment to load cached copies.
-rm(list=ls(pattern="model.*"))
+# rm(list=ls(pattern="model.*"))
+rm(model.mars)
 
 tc = trainControl(
   method = "repeatedcv",
@@ -15,9 +16,11 @@ if (!exists("model.mars")) {
     form = revenue ~ .,
     data = TRAIN_CLEAN,
     method = "earth",
-    trControl = tc
+    trControl = tc,
+    tuneGrid = data.frame(.degree=c(1:4), .nprune=c(100))
   )
   cache("model.mars")
+  print(summary(model.mars$finalModel))
 }
 
 if (!exists("model.rf")) {
@@ -33,6 +36,20 @@ if (!exists("model.rf")) {
     tuneGrid = data.frame(.mtry=c(2:8))
   )
   cache("model.rf")
+  
+  # Variable importance
+  IMP = model.rf$finalModel %>%
+    importance %>%
+    as.data.frame %>%
+    add_rownames %>%
+    rename(
+      variable = rowname,
+      PctIncMSE = `%IncMSE`
+      ) %>%
+    arrange(desc(abs(PctIncMSE)))
+  
+  print(model.rf$finalModel)
+  print.data.frame(IMP)
 }
 
 if (!exists("model.lm")) {
@@ -68,5 +85,4 @@ models.compare$values %>%
   select(date, model, metric, value=rmse) %>%
   write.csv(paste("reports/metrics/metrics_", as.YYYYMMDD(now()), "_train.csv", sep=""), row.names=FALSE)
 
-print(model.rf$finalModel)
 print(summary(models.compare))

@@ -1,4 +1,6 @@
-TEST_CLEAN = clean_data(TEST)
+TEST_CLEAN = TEST %>% 
+  transform_dependent
+
 if (any(is.na(TEST_CLEAN))) warning("NA's in TEST_CLEAN")
 
 # Create predictions

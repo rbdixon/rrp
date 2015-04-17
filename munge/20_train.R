@@ -9,3 +9,6 @@ tc = trainControl(
   method = "repeatedcv",
   repeats = 10
   )
+
+# Training formula
+train_formula = revenue ~ .^2

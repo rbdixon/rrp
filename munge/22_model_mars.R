@@ -1,7 +1,7 @@
 if (!exists("model.mars")) {
   set.seed(1)
   model.mars = train( 
-    form = revenue ~ .,
+    form = train_formula,
     data = TRAIN_CLEAN,
     method = "earth",
     trControl = tc,

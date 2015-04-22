@@ -2,7 +2,27 @@
 
 
 
-# Variable Characterization
+# Independent Variable Characterization
+
+
+```r
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(revenue)) +
+  geom_density() +
+  geom_vline( aes(xintercept=mean(revenue) ), color="blue") +
+  geom_vline( aes(xintercept=mean(revenue)+3*sd(revenue) )) +
+  geom_vline( aes(xintercept=mean(revenue)+2*sd(revenue) )) +
+  geom_vline( aes(xintercept=mean(revenue)+sd(revenue) )) +
+  geom_vline( aes(xintercept=mean(revenue)-sd(revenue) )) +
+  theme_bw()
+```
+
+![](00_exploratory_files/figure-html/rev_hist-1.png) 
+
+Blue line is mean. Black lines are 1, 2, 3 SD's from the mean.
+
+# Dependent Variable Characterization
 
 ## Open Date
 
@@ -48,22 +68,11 @@ DATA %>%
 
 
 ```r
-get_map(location="Turkey", zoom=5) %>%
-  ggmap +
-  geom_point(data = DATA, aes(lon, lat, color=City.Group, shape=dataset), position = "jitter", size=2) +
-  scale_shape_manual(values=c(0, 15))
+# get_map(location="Turkey", zoom=5) %>%
+#   ggmap +
+#   geom_point(data = DATA, aes(lon, lat, color=City.Group, shape=dataset), position = "jitter", size=2) +
+#   scale_shape_manual(values=c(0, 15))
 ```
-
-```
-## Map from URL : http://maps.googleapis.com/maps/api/staticmap?center=Turkey&zoom=5&size=640x640&scale=2&maptype=terrain&language=en-EN&sensor=false
-## Information from URL : http://maps.googleapis.com/maps/api/geocode/json?address=Turkey&sensor=false
-```
-
-```
-## Warning: Removed 298 rows containing missing values (geom_point).
-```
-
-![](00_exploratory_files/figure-html/map-1.png) 
 
 Yep, its Turkey!
 
@@ -160,6 +169,22 @@ DATA %>%
 ```
 
 ![](00_exploratory_files/figure-html/date_revenue_citygroup-1.png) 
+
+
+```r
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes( month(date), revenue, color=City.Group)) +
+    geom_point() +
+    geom_smooth() +
+    theme_bw()
+```
+
+```
+## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
+```
+
+![](00_exploratory_files/figure-html/month_revenue_citygroup-1.png) 
 
 ## Type
 
@@ -384,16 +409,25 @@ P_mv_histogram %>%
 
 ```r
 TRAIN.P.cor = cor(select(TRAIN, P1:P37))
-findCorrelation(TRAIN.P.cor, cutoff = .75)
+colnames(
+  TRAIN[,findCorrelation(TRAIN.P.cor, cutoff = .95)]
+  )
 ```
 
 ```
-##  [1] 36 34 16 32 18 30 14 35 26 31  1 20 10 15 25  7  9 24 13 28  8 12 33
-## [24] 19 21 37
+## [1] "P31" "P11" "P21" "P5"  "P4"
 ```
 
 # Linear Combinations
 
 ```r
 TRAIN.P.lc = findLinearCombos(select(TRAIN, P1:P37))
+```
+
+# Zero in Data
+
+```r
+X = apply(DATA, 1, function(r) {
+  length(which(r[6:43]==0))
+})
 ```

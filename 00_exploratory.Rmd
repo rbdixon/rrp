@@ -10,7 +10,24 @@ library(ProjectTemplate)
 load.project()
 ```
 
-# Variable Characterization
+# Independent Variable Characterization
+
+```{r rev_hist}
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes(revenue)) +
+  geom_density() +
+  geom_vline( aes(xintercept=mean(revenue) ), color="blue") +
+  geom_vline( aes(xintercept=mean(revenue)+3*sd(revenue) )) +
+  geom_vline( aes(xintercept=mean(revenue)+2*sd(revenue) )) +
+  geom_vline( aes(xintercept=mean(revenue)+sd(revenue) )) +
+  geom_vline( aes(xintercept=mean(revenue)-sd(revenue) )) +
+  theme_bw()
+```
+
+Blue line is mean. Black lines are 1, 2, 3 SD's from the mean.
+
+# Dependent Variable Characterization
 
 ## Open Date
 
@@ -40,10 +57,10 @@ DATA %>%
 ## City and City.Group
 
 ```{r map}
-get_map(location="Turkey", zoom=5) %>%
-  ggmap +
-  geom_point(data = DATA, aes(lon, lat, color=City.Group, shape=dataset), position = "jitter", size=2) +
-  scale_shape_manual(values=c(0, 15))
+# get_map(location="Turkey", zoom=5) %>%
+#   ggmap +
+#   geom_point(data = DATA, aes(lon, lat, color=City.Group, shape=dataset), position = "jitter", size=2) +
+#   scale_shape_manual(values=c(0, 15))
 ```
 
 Yep, its Turkey!
@@ -65,6 +82,15 @@ DATA %>%
     geom_smooth() +
     xlab("Date of Store Opening") +
     ylab("Revenue") +
+    theme_bw()
+```
+
+```{r month_revenue_citygroup}
+DATA %>%
+  filter(dataset=="TRAIN") %>%
+  ggplot(aes( month(date), revenue, color=City.Group)) +
+    geom_point() +
+    geom_smooth() +
     theme_bw()
 ```
 
@@ -201,10 +227,19 @@ P_mv_histogram %>%
 
 ```{r cor_pred}
 TRAIN.P.cor = cor(select(TRAIN, P1:P37))
-findCorrelation(TRAIN.P.cor, cutoff = .75)
+colnames(
+  TRAIN[,findCorrelation(TRAIN.P.cor, cutoff = .95)]
+  )
 ```
 
 # Linear Combinations
 ```{r linear_combos}
 TRAIN.P.lc = findLinearCombos(select(TRAIN, P1:P37))
+```
+
+# Zero in Data
+```{r zero}
+X = apply(DATA, 1, function(r) {
+  length(which(r[6:43]==0))
+})
 ```

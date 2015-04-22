@@ -1,4 +1,5 @@
-transform_dependent = function(D) {
+transform_dependent = function(D, corlim=0.9) {
+  
   D %>%
     # Not useful for modeling
     select(-Id, -dataset) %>%
@@ -7,16 +8,39 @@ transform_dependent = function(D) {
     mutate(
       # Parse date
       Open.Date = mdy(Open.Date),
-      recent = year(Open.Date)>=2011,
+      recent = year(Open.Date)>=2010,
+#       year = year(Open.Date),
+#       days_since_open = as.integer( ymd("2015-04-01") - Open.Date ),
       
       # dummy Type
       typeFC = Type=="FC",
       typeIL = Type=="IL",
       typeDT = Type=="DT"
     ) %>%
+  
     # Factorize
-    mutate_each(funs(factor), City, City.Group) %>%
+    mutate_each(funs(factor), City.Group) %>%
+  
+    # Mark the NA City Name
+    # mutate(City = replace(City, City=="Tanımsız", NA)) %>%
     
+    # Test converting some variables to be a boolean with 0==FALSe
+    #mutate_each(funs(not(.==0)), P14:P18, P24:P27, P30:P37) %>%
+    
+    # Scale and sum correlating variables
+    # mutate_each( "scale", P31, P11, P21, P5, P4) %>%
+    # mutate( cmv = sum(P31, P11, P21, P5, P4) ) %>%
+    # 95% cor: P31, P11, P21, P5, P4
+    select( -P11, -P21, -P5, -P4 ) %>% 
+
+    # Test Damon's suggestion to cut revenue and assign a level
+    left_join(CITY_TO_REVCUT, by="City") %>%
+    mutate(
+      revcut = replace(revcut, is.na(revcut), "C"),
+      sdrevenue = replace(sdrevenue, is.na(sdrevenue), "E")
+    ) %>%
+  
+    # Mark 
     # For now drop all but the mystery vars
     select(
       -Open.Date,

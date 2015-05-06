@@ -72,6 +72,11 @@ Source: CRAN
 Version: 2.9
 Hash: 0b63e0b7e23cfae1c2276644424a1495
 
+Package: XML
+Source: CRAN
+Version: 3.98-1.1
+Hash: 13746d37588e7083349177d6e8234864
+
 Package: assertthat
 Source: CRAN
 Version: 0.1

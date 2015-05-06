@@ -20,48 +20,58 @@ SCOREBOARD = read.csv("raw/restaurant-revenue-prediction_public_leaderboard.csv"
   mutate_each(funs(ymd_hms), SubmissionDate) %>%
   mutate_each(funs(factor), TeamId, TeamName) %>%
   group_by(TeamId, TeamName, SubmissionDate) %>%
-  summarize(Score = max(Score)) %>%
+  summarize(Score = min(Score)) %>%
   mutate(
-    us = ifelse(TeamId == TEAMID, TRUE, FALSE)
+    us = TeamId == TEAMID
   )
 
-SCOREBOARD_BEST = SCOREBOARD %>%
-  mutate(
-    date = as.YYYYMMDD(SubmissionDate)
-  ) %>%
-  group_by(date) %>%
-  arrange(date) %>%
-  summarize(minrmse = min(Score)) %>%
-  mutate(minrmse = cummin(minrmse))
+FINAL_SCOREBOARD = SCOREBOARD %>% 
+  group_by(TeamId, TeamName) %>% 
+  summarize(
+    FinalScore = min(Score),
+    us = any(us)
+  )
 
-NOTES = read.csv("raw/notes.csv", stringsAsFactors=FALSE) %>%
-  tbl_df
+RESULTS = readHTMLTable("raw/private_leaderboard.html", header=TRUE, which=1, stringsAsFactors=FALSE)
+colnames(RESULTS) = c("rank", "deltarank", "TeamName", "Score", "Entries", "LastSubmissionDate")
+RESULTS %<>%
+  mutate_each(funs(as.numeric), rank, Score) %>% 
+  mutate_each(funs(factor), TeamName)
 
-METRICS = plyr::ldply( list.files("./reports/metrics", pattern = "*.csv"), function(fn) {
-  read.csv( sprintf("./reports/metrics/%s", fn) )
-}) %>%
-  left_join(NOTES, by=c("date", "model"))
 ```
 
 ```{r scoreboard_best}
-ggplot(SCOREBOARD_BEST, aes(ymd(date), minrmse)) +
-  geom_step(color="blue", size=2) +
-  geom_point(data = filter(SCOREBOARD, !us, Score<median(Score)), aes(SubmissionDate, Score), color="grey") +
-  geom_point(data = filter(SCOREBOARD, us), aes(SubmissionDate, Score), color="red") +
-  xlab("Date") +
-  ylab("Minimum RMSE (log)") +
-  scale_y_log10() +
-  theme_bw() +
-  ggtitle("Kaggle RRP: RMSE Scoreboard (scores less than median)")
+SCOREBOARD %>% 
+  ggplot(aes(SubmissionDate, Score)) +
+    geom_point(data = filter(SCOREBOARD, Score < 1.05*median(FINAL_SCOREBOARD$FinalScore), Score > 1e6, !us), aes(SubmissionDate, Score), color="grey") +
+    geom_point(data = filter(SCOREBOARD, us), aes(SubmissionDate, Score), color="red") +
+  #   geom_point(data = filter(SCOREBOARD, !us, Score<median(Score)), aes(SubmissionDate, Score), color="grey") +
+  #   geom_point(data = filter(SCOREBOARD, us), aes(SubmissionDate, Score), color="red") +
+    geom_hline(yintercept=median(FINAL_SCOREBOARD$FinalScore)) +
+    xlab("Date") +
+    ylab("Minimum RMSE (log) on Day") +
+    scale_y_log10() +
+    theme_bw() +
+    ggtitle("Kaggle RRP: RMSE Scoreboard (scores less than median)")
 ```
 
 ```{r scoreboard_cdf}
-SCOREBOARD %>%
-#   filter(log(Score)<15) %>%
-  ggplot(aes(log(Score))) +
-    geom_density() +
-    geom_vline(data = filter(SCOREBOARD, us), aes(xintercept=log(Score)), color="red") +
-    geom_vline(xintercept=log(2308563.60185), color="grey") +
-    scale_x_reverse(lim=c(15,min(log(SCOREBOARD$Score)))) +
-    xlab("log(Score): Smaller is better. Better scores go to the right (reversed axis)")
+PRESULTS = RESULTS %>%
+  mutate(
+    ppdiff = (1 - (Score / min(Score))) * -100
+  )
+
+usppdiff = (1 - ( 1829191.19517 / min(PRESULTS$Score))) * -100
+
+ggplot(PRESULTS, aes(ppdiff)) +
+  stat_ecdf() +
+  geom_vline(xintercept=usppdiff, color="red") +
+  geom_hline(yintercept=0) +
+  geom_hline(yintercept=0.5, color="grey") +
+  geom_text(aes(usppdiff, 0), label=sprintf("Our team: %0.2f %%", usppdiff), vjust=-1) +
+  scale_x_reverse(lim=c(100, 0)) +
+  theme_bw() +
+  xlab("Percentage points off of minimum RMSE score") +
+  ylab("Percentage of teams with worse score") +
+  ggtitle("Random Deforestation: Restaurant Revenue Prediction")
 ```

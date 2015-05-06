@@ -1,6 +1,6 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.2.8
-RVersion: 3.1.2
+RVersion: 3.2.0
 Repos: CRAN=http://cran.rstudio.com/
 
 Package: BH
@@ -67,6 +67,11 @@ Source: CRAN
 Version: 1.6
 Hash: ebefb2caf6ba73d3202d5153db1af0d8
 
+Package: TeachingDemos
+Source: CRAN
+Version: 2.9
+Hash: 0b63e0b7e23cfae1c2276644424a1495
+
 Package: assertthat
 Source: CRAN
 Version: 0.1
@@ -130,9 +135,9 @@ Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr
 
 Package: earth
 Source: CRAN
-Version: 4.2.0
-Hash: c0cd0d37d74d969a2048d6956202abb8
-Requires: plotmo, plotrix
+Version: 4.3.0
+Hash: dc6f06fb8473a4be9e4192473362cc3d
+Requires: plotmo
 
 Package: evaluate
 Source: CRAN
@@ -153,8 +158,8 @@ Hash: 8d2a06a106150308bffdd6e669669c0c
 
 Package: geosphere
 Source: CRAN
-Version: 1.3-11
-Hash: 13d55a922c33d6b4661bd095a306a450
+Version: 1.3-13
+Hash: 36c69e6720445b3ab89693950b7b4c2d
 Requires: sp
 
 Package: ggmap
@@ -166,8 +171,8 @@ Requires: RgoogleMaps, digest, geosphere, ggplot2, jpeg, mapproj, plyr,
 
 Package: ggplot2
 Source: CRAN
-Version: 1.0.0
-Hash: c8bff66238347472f08b6a35608539ff
+Version: 1.0.1
+Hash: 06a8e5faacfd76c9e4ab11a5b7ad94d6
 Requires: digest, gtable, plyr, proto, reshape2, scales
 
 Package: gtable
@@ -301,8 +306,9 @@ Requires: lme4
 
 Package: plotmo
 Source: CRAN
-Version: 2.2.1
-Hash: ef9577434a974d492623a02cd0b91b9f
+Version: 3.0.0
+Hash: ba5a58be295057041922ddecff67bcd3
+Requires: TeachingDemos, plotrix
 
 Package: plotrix
 Source: CRAN
@@ -311,8 +317,8 @@ Hash: 615f871b3ee3798e318330a5c2323623
 
 Package: plyr
 Source: CRAN
-Version: 1.8.1
-Hash: 7dd935ee4050eaf2973108be2faf245e
+Version: 1.8.2
+Hash: a6d0a2d9382a6a6eef05f5271df94c5f
 Requires: Rcpp
 
 Package: png
@@ -366,8 +372,8 @@ Requires: RColorBrewer, dichromat, labeling, munsell, plyr
 
 Package: sp
 Source: CRAN
-Version: 1.0-17
-Hash: 29bd0f1fc6cba0edf00eafe2b5b8e9d0
+Version: 1.1-0
+Hash: 53fa1a7a03c897eac993d0a2253c5b0d
 
 Package: stringi
 Source: CRAN
@@ -376,8 +382,9 @@ Hash: 955e96fc5961bf9f7b3ca916f9b1e606
 
 Package: stringr
 Source: CRAN
-Version: 0.6.2
-Hash: cdde0cfa0f52cffeaca23a11a3899779
+Version: 1.0.0
+Hash: 513045488dcf8019cc2f4305dc7d1f90
+Requires: magrittr, stringi
 
 Package: tidyr
 Source: CRAN
